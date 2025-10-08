@@ -40,15 +40,8 @@ Done
 | **Firebase Realtime Database** *(optional)* | Future enhancement for project storage per user |
 | **Chart.js**                                | Dynamic visual reports                          |
 
-## 📁 Project Structure
+## 🪪 License
 
-smart-pm-project-management-tool/
-│
-├── index.html          # Main landing page or redirect to login
-├── login.html          # User login screen
-├── signup.html         # User signup screen
-│
-├── style.css           # All custom styles
-├── script.js           # App logic (project/task handling)
-│
-└── README.md           # Project documentation
+This project is for learning purposes.
+
+
