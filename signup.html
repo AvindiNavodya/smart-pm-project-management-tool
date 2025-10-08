@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign Up | Smart Project Manager</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body{display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg,#2563eb,#1e3a8a);}
+    .auth-container{background:#fff;padding:2.2rem;border-radius:14px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+    .auth-container h2{text-align:center;margin:0 0 1rem;color:#1e3a8a}
+    .auth-container input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #e6e9ef;box-shadow:0 0 6px rgba(37,99,235,0.18)}
+    .auth-container input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 12px rgba(37,99,235,0.25)}
+    .auth-container button{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+    .auth-container p{text-align:center;margin-top:12px}
+    .auth-help{font-size:13px;color:#475569;text-align:center;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h2>Create Account</h2>
+    <input id="signupName" type="text" placeholder="Full name" />
+    <input id="signupEmail" type="email" placeholder="Email" />
+    <input id="signupPassword" type="password" placeholder="Password" />
+    <button id="signupBtn">Create account</button>
+    <p class="auth-help">Already have an account? <a href="login.html">Sign in</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    // <-- your Firebase config (use the same config in other files) -->
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-ENyjucCO-AeBCOsGE45b8sqUtigC0C4",
+      authDomain: "smart-project-manager-8e2f6.firebaseapp.com",
+      projectId: "smart-project-manager-8e2f6",
+      storageBucket: "smart-project-manager-8e2f6.firebasestorage.app",
+      messagingSenderId: "72824676127",
+      appId: "1:72824676127:web:6adace8e185d0c3bee9a2a",
+      measurementId: "G-73N0HTCS46"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const signupBtn = document.getElementById("signupBtn");
+    signupBtn.addEventListener("click", async () => {
+      const name = document.getElementById("signupName").value.trim();
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value.trim();
+
+      if (!name || !email || !password) {
+        alert("Please fill all fields.");
+        return;
+      }
+      if (password.length < 6) {
+        alert("Password should be at least 6 characters.");
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // update displayName
+        await updateProfile(userCredential.user, { displayName: name });
+
+        // initialize an empty per-user projects store in localStorage
+        const key = `projectsData_${userCredential.user.uid}`;
+        if (!localStorage.getItem(key)) {
+          localStorage.setItem(key, JSON.stringify({}));
+        }
+
+        // redirect to dashboard
+        window.location.href = "index.html";
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+  </script>
+</body>
+</html>

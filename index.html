@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Project Manager — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* Topbar / profile UI (compact; you can move to style.css) */
+    .topbar {
+      display:flex;align-items:center;gap:12px;justify-content:space-between;padding:12px 18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5));backdrop-filter:blur(6px);
+      position:sticky;top:0;z-index:20;margin-bottom:14px;
+    }
+    .user-profile {display:flex;gap:10px;align-items:center;cursor:pointer;padding:6px 10px;border-radius:999px;background:rgba(37,99,235,0.06)}
+    .user-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#2563eb,#3b82f6);font-weight:700}
+    /* logout confirm modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:999}
+    .modal-card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.18);width:420px;max-width:90%}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer}
+    .btn.primary{background:#2563eb;color:#fff}
+    .btn.ghost{background:#f3f4f6}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">PM</div>
+        <div class="brand-text"><strong>Smart</strong> PM</div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-view="projects">📂 <span>Projects</span></button>
+        <button class="nav-btn" data-view="tasks">✅ <span>Tasks</span></button>
+        <button class="nav-btn" data-view="reports">📊 <span>Reports</span></button>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="topbar">
+        <h1 id="pageTitle">Projects</h1>
+
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="user-profile" id="userProfile" title="Open user menu">
+            <div id="userAvatar" class="user-avatar">U</div>
+            <div style="display:flex;flex-direction:column;align-items:flex-start">
+              <div id="userName" style="font-weight:700;color:#1e3a8a">User</div>
+              <div id="userEmail" style="font-size:12px;color:#475569">email@example.com</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PROJECTS VIEW -->
+      <section id="projectsView" class="view">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Projects</h2>
+            <div class="controls">
+              <input id="projectName" type="text" placeholder="Enter project name..." />
+              <input id="projectDeadline" type="date" />
+              <button id="addProjectBtn" class="btn primary">+ Create</button>
+            </div>
+          </div>
+          <div id="projectsContainer" class="projects-grid"></div>
+        </div>
+      </section>
+
+      <!-- TASKS VIEW -->
+      <section id="tasksView" class="view" style="display:none;">
+        <div class="panel">
+          <div class="panel-header tasks-header">
+            <h2 id="taskProjectName">Project Tasks</h2>
+            <div class="controls">
+              <input id="taskNameInput" type="text" placeholder="Task Name..." />
+              <input id="taskDescInput" type="text" placeholder="Description..." />
+              <button id="addTaskBtn" class="btn primary">+ Add Task</button>
+            </div>
+          </div>
+
+          <!-- TASK SUMMARY CARDS -->
+          <div id="taskSummary" class="task-summary modern-summary">
+            <div class="task-card todo">
+              <h3>To Do</h3>
+              <p id="todoCount">0</p>
+            </div>
+            <div class="task-card inprogress">
+              <h3>In Progress</h3>
+              <p id="inprogressCount">0</p>
+            </div>
+            <div class="task-card done">
+              <h3>Done</h3>
+              <p id="doneCount">0</p>
+            </div>
+          </div>
+
+          <!-- KANBAN BOARD -->
+          <div id="kanbanBoard" class="kanban-board modern-kanban">
+            <div class="kanban-column" data-status="todo">
+              <h3>To Do</h3>
+              <div class="kanban-tasks"></div>
+            </div>
+            <div class="kanban-column" data-status="inprogress">
+              <h3>In Progress</h3>
+              <div class="kanban-tasks"></div>
+            </div>
+            <div class="kanban-column" data-status="done">
+              <h3>Done</h3>
+              <div class="kanban-tasks"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPORTS VIEW -->
+      <section id="reportsView" class="view" style="display:none;">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Reports</h2>
+            <div class="controls">
+              <select id="reportProjectSelect"></select>
+              <button id="refreshReports" class="btn">Refresh</button>
+            </div>
+          </div>
+          <div id="reportsContainer" class="report-cards"></div>
+          <div class="charts-grid">
+            <div class="chart-box"><h3>Task Distribution</h3><canvas id="reportPie"></canvas></div>
+            <div class="chart-box"><h3>Progress Overview</h3><canvas id="reportChart"></canvas></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Logout Confirm Modal (custom, modern) -->
+  <div id="logoutModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <h3 style="margin:0 0 8px">Sign out</h3>
+      <p style="margin:0;color:#475569">Are you sure you want to sign out?</p>
+      <div class="modal-actions">
+        <button id="logoutCancel" class="btn ghost">No, stay</button>
+        <button id="logoutConfirm" class="btn primary">Yes, sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase auth + hook calls into script.js -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-ENyjucCO-AeBCOsGE45b8sqUtigC0C4",
+      authDomain: "smart-project-manager-8e2f6.firebaseapp.com",
+      projectId: "smart-project-manager-8e2f6",
+      storageBucket: "smart-project-manager-8e2f6.firebasestorage.app",
+      messagingSenderId: "72824676127",
+      appId: "1:72824676127:web:6adace8e185d0c3bee9a2a",
+      measurementId: "G-73N0HTCS46"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // show/hide logout modal
+    const logoutModal = document.getElementById("logoutModal");
+    const logoutCancel = document.getElementById("logoutCancel");
+    const logoutConfirm = document.getElementById("logoutConfirm");
+    const userProfile = document.getElementById("userProfile");
+
+    userProfile.addEventListener("contextmenu", e => e.preventDefault()); // nice to disable default menu (optional)
+    // open modal when clicking user profile
+    userProfile.addEventListener("click", () => {
+      logoutModal.style.display = "flex";
+    });
+    logoutCancel.addEventListener("click", () => logoutModal.style.display = "none");
+
+    // confirmation triggers firebase signOut
+    logoutConfirm.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        // onAuthStateChanged will redirect
+      } catch (err) {
+        alert("Error signing out: " + err.message);
+      }
+    });
+
+    // Auth state handling: call into script.js hooks so it loads user-specific data
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // not signed in → redirect to login
+        window.location.href = "login.html";
+        return;
+      }
+      // fill topbar
+      const name = user.displayName || user.email.split("@")[0];
+      document.getElementById("userName").textContent = name;
+      document.getElementById("userEmail").textContent = user.email;
+      document.getElementById("userAvatar").textContent = (name.charAt(0) || "U").toUpperCase();
+
+      // let the app code know a user is ready
+      if (typeof window.onUserSignedIn === "function") window.onUserSignedIn(user);
+    });
+  </script>
+
+  <!-- app logic -->
+  <script src="script.js"></script>
+</body>
+</html>
