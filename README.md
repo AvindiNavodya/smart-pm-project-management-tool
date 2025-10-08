@@ -40,7 +40,7 @@ Done
 | **Firebase Realtime Database** *(optional)* | Future enhancement for project storage per user |
 | **Chart.js**                                | Dynamic visual reports                          |
 
-# 📁 Project Structure
+## 📁 Project Structure
 
 smart-pm-project-management-tool/
 │
