@@ -28,3 +28,15 @@ Done
 👤 User Profile Dropdown with logout confirmation
 
 💡 Responsive and Modern UI — built with glassmorphism and smooth transitions
+
+## 🛠️ Tech Stack
+
+| Technology                                  | Purpose                                         |
+| ------------------------------------------- | ----------------------------------------------- |
+| **HTML5**                                   | Structure of the web app                        |
+| **CSS3**                                    | Styling and UI animations                       |
+| **JavaScript (ES6)**                        | App logic, task management, and navigation      |
+| **Firebase Authentication**                 | User signup, login, and logout                  |
+| **Firebase Realtime Database** *(optional)* | Future enhancement for project storage per user |
+| **Chart.js**                                | Dynamic visual reports                          |
+
