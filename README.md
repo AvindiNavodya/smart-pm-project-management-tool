@@ -35,9 +35,9 @@ Done
 | ------------------------------------------- | ----------------------------------------------- |
 | **HTML5**                                   | Structure of the web app                        |
 | **CSS3**                                    | Styling and UI animations                       |
-| **JavaScript (ES6)**                        | App logic, task management, and navigation      |
+| **JavaScript **                        | App logic, task management, and navigation      |
 | **Firebase Authentication**                 | User signup, login, and logout                  |
-| **Firebase Realtime Database** *(optional)* | Future enhancement for project storage per user |
+| **Firebase Realtime Database**  | Future enhancement for project storage per user |
 | **Chart.js**                                | Dynamic visual reports                          |
 
 ## 🪪 License
